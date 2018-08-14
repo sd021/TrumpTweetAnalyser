@@ -43,21 +43,26 @@ class DataCleaner():
 
         return ret_dict
     
+    def construct_tweet_lists(self, tweets, occurances):
+        column = []
+        current_pos = 0
+        for row in occurances:
+            tweet_list = tweets[current_pos:current_pos+row]
+            column.append(tweet_list)
+            current_pos += row
+            
+        return column
+    
     def create_dataframe(self, data_file):
         tweets, dates = self.load_data(data_file)
         dates_df = pd.DataFrame.from_dict(self.construct_full_date_dict(dates), orient="index")
         dates_df.index.name = "date"
         dates_df.columns = ["numTweets"]
         
-        tweet_series = []
-        running_count = 0
-        for row in dates_df['numTweets']:
-            tweet_list = tweets[running_count:running_count+row]
-            tweet_series.append(tweet_list)
-            running_count = row
-            
-        dates_df['tweets'] = tweet_series
+        dates_df['tweets'] = self.construct_tweet_lists(tweets[::-1], dates_df['numTweets'])
+        
         return dates_df
+
 
 
 def main():
