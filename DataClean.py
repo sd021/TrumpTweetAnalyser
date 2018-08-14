@@ -28,17 +28,18 @@ class DataCleaner():
 
         split_start = start_date.split("-")
         split_end = end_date.split("-")
-
+        
+        # Create two date objects and then construct a list of the dates between them
         d1 = date(int(split_start[0]), int(split_start[1]), int(split_start[2]))
         d2 = date(int(split_end[0]), int(split_end[1]), int(split_end[2]))
         full_date_list = [d1 + timedelta(days=x) for x in range((d2 - d1).days + 1)]
 
         ret_dict = OrderedDict()
-        for d in full_date_list:
-            ret_dict[str(d)] = 0
+        for day in full_date_list:
+            ret_dict[str(day)] = 0
 
-        for d in dates:
-            ret_dict[d.split(" ")[0]] += 1
+        for day in dates:
+            ret_dict[day.split(" ")[0]] += 1
 
         return ret_dict
     
@@ -48,6 +49,14 @@ class DataCleaner():
         dates_df.index.name = "date"
         dates_df.columns = ["numTweets"]
         
+        tweet_series = []
+        running_count = 0
+        for row in dates_df['numTweets']:
+            tweet_list = tweets[running_count:running_count+row]
+            tweet_series.append(tweet_list)
+            running_count = row
+            
+        dates_df['tweets'] = tweet_series
         return dates_df
 
 
