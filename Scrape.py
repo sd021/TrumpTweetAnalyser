@@ -28,7 +28,8 @@ def scrape():
         
     with open("data.csv", 'w') as f:
         for tweet, date, in zip(tweets,dates):
-            f.write("{0},{1}\n".format(str(date), tweet.encode("utf-8")))
-                    
+            outstr = u'%s|%s\n' %(str(date), tweet)
+            f.write(outstr.encode("ascii", "ignore"))
+
 if __name__ == "__main__":
     scrape()

@@ -1,4 +1,5 @@
 import sys
+import io
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -14,13 +15,25 @@ class DataCleaner():
     def load_data(self, filename):
         dates, tweets = [], []
 
-        with open(filename) as f:
+        with open(filename, 'r') as f:
             for line in f:
-                split_line = line.split(",")
+                cleaned_line = self.clean_line(line)
+                split_line = cleaned_line.split("|")
                 dates.append(split_line[0])
                 tweets.append(split_line[1])
 
         return (tweets, dates)
+
+    def clean_line(self, line):
+        replacements = {
+            "&amp;": "and"
+        }
+        ret_str = line
+
+        for replacement in replacements:
+            ret_str = line.replace(replacement, replacements[replacement])
+
+        return ret_str
 
     def construct_full_date_dict(self, dates):
         start_date = dates[-1].split(" ")[0]
