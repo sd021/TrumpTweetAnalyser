@@ -65,7 +65,23 @@ class DataCleaner():
             current_pos += row
             
         return column
-    
+
+    def add_wordcount_to_df(self, df):
+        wordcounts = []
+        avg_wc = []
+        for row in df['tweets']:
+            if len(row) == 0:
+                wordcounts.append([])
+                avg_wc.append(0)
+            else:
+                wc_list = [len(x.split(" ")) for x in row]
+                wordcounts.append(wc_list)
+                avg_wc.append(sum(wc_list)/len(wc_list))
+
+        df['wordcounts'] = wordcounts
+        df['avg_wordcount'] = avg_wc
+        return df
+
     def create_dataframe(self, data_file):
         tweets, dates = self.load_data(data_file)
         dates_df = pd.DataFrame.from_dict(self.construct_full_date_dict(dates), orient="index")
@@ -73,6 +89,7 @@ class DataCleaner():
         dates_df.columns = ["numTweets"]
         
         dates_df['tweets'] = self.construct_tweet_lists(tweets[::-1], dates_df['numTweets'])
+        df = self.add_wordcount_to_df(dates_df)
         
         return dates_df
 
